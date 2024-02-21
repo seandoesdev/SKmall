@@ -1,0 +1,34 @@
+package com.sk.skmall.domain.base;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
+public enum RoleType {
+
+    // Admin
+    MASTER(10011, "ROLE_MASTER"),
+    CHAT_ADMIN(10012, "ROLE_CHAT_ADMIN"),
+    BOARD_ADMIN(10013, "ROLE_BOARD_ADMIN"),
+    MONITORING_ADMIN(10014, "ROLE_MONITORING_ADMIN"),
+
+    // Seller
+    DIAMOND_SELLER(10021, "ROLE_DIAMOND_SELLER"),
+    GOLD_SELLER(10022, "ROLE_GOLD_SELLER"),
+    SILVER_SELLER(10023, "ROLE_SILVER_SELLER"),
+    BRONZE_SELLER(10024, "ROLE_BRONZE_SELLER"),
+    NOMAL_SELLER(10025, "ROLE_NOMAL_SELLER"),
+    OFFICIAL_SELLER(10026, "ROLE_OFFICIAL_SELLER"),
+
+    // CUSTOMER
+    VVIP_CUSTOMER(10031, "ROLE_VIP,CUSTOMER"),
+    VIP_CUSTOMER(10032, "ROLE_VIP_CUSTOMER"),
+    COMMON_CUSTOMER(10033, "ROLE_COMMON_CUSTOMER"),
+    NEW_CUSTOMER(10034, "ROLE_CUSTOMER")
+    ;
+
+    private final Integer code;
+    private  final String role;
+
+}
