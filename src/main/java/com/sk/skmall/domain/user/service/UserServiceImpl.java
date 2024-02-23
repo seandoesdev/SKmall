@@ -19,6 +19,7 @@ import java.util.Iterator;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
@@ -26,18 +27,14 @@ public class UserServiceImpl implements UserService{
     private final HttpSession httpSession;
 
     @Override
-    public User joinProcess(UserDTO user, int roleCode) {
+    public User joinProcessOfCustomer(UserDTO user) {
 
         userRepository.findByUsername(user.getUsername())
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("고객을 찾을 수 없습니다."));
 
         User userEntity = User.toEntity(user);
+        userEntity.setRole(RoleType.NEW_CUSTOMER);
 
-        if (roleCode == 1001) {
-            userEntity.setRole(RoleType.MONITORING_ADMIN);
-        } else if (roleCode == 1002) {
-            userEntity.setRole(RoleType.NEW_CUSTOMER);
-        }
 
         String rawPassword = user.getPassword();
         String encPassword = passwordEncoder.encode(rawPassword);
@@ -47,7 +44,22 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    @Transactional
+    public User joinProcessOfSeller(UserDTO user) {
+
+        userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("판매자를 찾을 수 없습니다."));
+
+        User userEntity = User.toEntity(user);
+        userEntity.setRole(RoleType.NOMAL_SELLER);
+
+        String rawPassword = user.getPassword();
+        String encPassword = passwordEncoder.encode(rawPassword);
+        userEntity.setPassword(encPassword);
+
+        return userRepository.save(userEntity);
+    }
+
+    @Override
     public User updateUserInfo(String newUsername, String newEmail) {
         // 사용자 존재 여부 확인
         User existingUser = userRepository.findByUsername(newUsername)

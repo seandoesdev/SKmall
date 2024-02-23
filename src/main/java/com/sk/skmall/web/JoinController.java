@@ -13,9 +13,13 @@ public class JoinController {
 
     private final UserService userServiceImpl;
 
-    @PostMapping("/register/{role-code}")
-    public void register(@PathVariable int roleCode, UserDTO user){
+    @PostMapping("/register/customer")
+    public void registerCustomer(UserDTO user){
+        userServiceImpl.joinProcessOfCustomer(user);
+    }
 
-        userServiceImpl.joinProcess(user, roleCode);
+    @PostMapping("/register/seller")
+    public void registerSeller(UserDTO user){
+        userServiceImpl.joinProcessOfSeller(user);
     }
 }
