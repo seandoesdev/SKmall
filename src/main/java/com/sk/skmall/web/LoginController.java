@@ -5,18 +5,23 @@ import com.sk.skmall.domain.user.dto.UserDTO;
 import com.sk.skmall.domain.user.entity.User;
 import com.sk.skmall.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/auth")
+import static com.sk.skmall.util.HttpResponses.RESPONSE_OK;
+
+@Controller
 @RequiredArgsConstructor
 public class LoginController {
 
     private final UserService userServiceImpl;
 
-    @PostMapping("/login/{role-code}")
-    public void login(@PathVariable int roleCode, User user){
+    @PostMapping("/loginForm")
+    public String login(User userEntity){
 
+        return "test all";
     }
 
 

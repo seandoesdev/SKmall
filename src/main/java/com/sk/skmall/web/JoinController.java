@@ -3,23 +3,28 @@ package com.sk.skmall.web;
 import com.sk.skmall.domain.user.dto.UserDTO;
 import com.sk.skmall.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import static com.sk.skmall.util.HttpResponses.RESPONSE_OK;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/register")
 public class JoinController {
 
     private final UserService userServiceImpl;
 
-    @PostMapping("/register/customer")
-    public void registerCustomer(UserDTO user){
-        userServiceImpl.joinProcessOfCustomer(user);
+    @PostMapping("/customer")
+    public ResponseEntity<HttpStatus> registerCustomer(UserDTO userDTO){
+        userServiceImpl.joinProcessOfCustomer(userDTO);
+        return RESPONSE_OK;
     }
 
-    @PostMapping("/register/seller")
-    public void registerSeller(UserDTO user){
-        userServiceImpl.joinProcessOfSeller(user);
+    @PostMapping("/seller")
+    public ResponseEntity<HttpStatus> registerSeller(UserDTO userDTO){
+        userServiceImpl.joinProcessOfSeller(userDTO);
+        return RESPONSE_OK;
     }
 }
