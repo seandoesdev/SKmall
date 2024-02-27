@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sk.skmall.domain.base.RoleType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -27,6 +30,8 @@ import java.io.PrintWriter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final AuthenticationEvents authenticationEvents;
+
     // password 암호화
     // 해당 메서드의 리턴되는 오브젝트를 IoC로 등록
     @Bean
@@ -35,30 +40,47 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
+    }
+
+    @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+
+                // login 페이지 및 로그인 기능 설정
+                .formLogin((login) ->
+                        login
+                                .loginPage("/loginForm")
+                                .loginProcessingUrl("loginProc")
+                                .usernameParameter("id")
+                                .permitAll()
+                                .defaultSuccessUrl("/")
+                )
+
+                .logout((logout) ->
+                        logout
+                                .logoutSuccessUrl("/")
+                )
+
+                // http basic 인증 방식 설정
+                .httpBasic(AbstractHttpConfigurer::disable)
+
                 .headers((headerConfig) ->
                         headerConfig.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable
                         )
                 )
+
                 // 특정 요청 Endpoint를 허용 또는 거부하도록 설정
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers("/", "/auth/**").permitAll()
+                                .requestMatchers("/register/customer", "/admin/login").permitAll()
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/posts/**", "/api/v1/posts/**").hasRole(RoleType.NEW_CUSTOMER.name())
                                 .requestMatchers("/admin/**", "/api/v1/admin/**").hasRole(RoleType.MASTER.name())
-                                .anyRequest().permitAll()
-                )
-
-                // login 페이지 및 로그인 기능 설정
-                .formLogin((auth) ->
-                        auth
-                                .loginPage("/auth/login")
-                                .loginProcessingUrl("auth/login/loginProc")
-                                .permitAll()
-                                .defaultSuccessUrl("/")
+                                .anyRequest().permitAll() // 기본적인 api가 갖춰지면 .hasAnyRole()로 수정 필요
                 )
 
                 // 다중 로그인 설정

@@ -4,10 +4,7 @@ import com.sk.skmall.domain.base.RoleType;
 import com.sk.skmall.domain.user.dto.UserDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
@@ -17,24 +14,26 @@ import java.util.Date;
 
 @Entity
 @Table(name = "USER_TB")
-@Getter @ToString
+@Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_key")
-    private Integer key;
+    private Long key;
 
     @Setter
     @Enumerated(EnumType.STRING)
-    @Column(name = "type")
     private RoleType role;
 
-    @Column(length = 16)
     private String id;
 
     @Setter
-    @Column(name = "pw", length = 32)
+    @Column(name = "pw")
     private String password;
 
     @Email // can be null value
@@ -68,31 +67,14 @@ public class User {
     @Column(name = "last_login_time")
     private LocalDateTime lastLoginTime;
 
-    @Builder
-    public User(Integer key, String id, String email, String username,
-                String password, String gender, LocalDateTime birth, String phone,
-                Byte terms_agree, Byte marketing_agree) {
-        this.key = key;
-        this.id = id;
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.gender = gender;
-        this.birth = birth;
-        this.phone = phone;
-        this.terms_agree = terms_agree;
-        this.marketing_agree = marketing_agree;
-    }
-
     public void updateUserInfo(String username, String password){
         this.username = username;
         this.password = password;
     }
 
-
-    public static User toEntity(UserDTO userDTO){
+    public static User from(UserDTO userDTO){
         return User.builder()
-                .key(userDTO.getKey())
+                .role(userDTO.getRole())
                 .id(userDTO.getId())
                 .email(userDTO.getEmail())
                 .username(userDTO.getUsername())
