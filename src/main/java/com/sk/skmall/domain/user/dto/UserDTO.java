@@ -1,19 +1,21 @@
 package com.sk.skmall.domain.user.dto;
 
+import com.sk.skmall.domain.base.RoleType;
 import com.sk.skmall.domain.user.entity.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
-@RequiredArgsConstructor
 @Getter
+@Setter
 @ToString
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Builder
 public class UserDTO {
 
-    private Integer key;
+    private RoleType role;
 
     private String id;
 
@@ -33,9 +35,9 @@ public class UserDTO {
 
     private Byte marketing_agree;
 
-    public static UserDTO toDTO(User entity){
+    public static UserDTO from(User entity){
         return UserDTO.builder()
-                .key(entity.getKey())
+                .role(entity.getRole())
                 .id(entity.getId())
                 .password(entity.getPassword())
                 .email(entity.getEmail())

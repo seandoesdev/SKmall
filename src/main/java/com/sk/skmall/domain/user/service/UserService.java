@@ -5,7 +5,8 @@ import com.sk.skmall.domain.user.entity.User;
 
 public interface UserService {
 
-    User joinProcess(UserDTO user, int roleCode);
+    User joinProcessOfCustomer(UserDTO user);
+    User joinProcessOfSeller(UserDTO user);
     User updateUserInfo(String newUsername, String newEmail);
 //    String currentUserId();
 }
