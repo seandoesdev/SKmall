@@ -19,8 +19,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.PrintWriter;
+import java.util.List;
 
 /**
  *
@@ -45,19 +49,27 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of("http://localhost:8090"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // login 페이지 및 로그인 기능 설정
-                .formLogin((login) ->
-                        login
-                                .loginPage("/loginForm")
-                                .loginProcessingUrl("loginProc")
-                                .usernameParameter("id")
-                                .permitAll()
-                                .defaultSuccessUrl("/")
-                )
+                .formLogin(AbstractHttpConfigurer::disable)
 
                 .logout((logout) ->
                         logout
@@ -75,11 +87,31 @@ public class SecurityConfig {
                 // 특정 요청 Endpoint를 허용 또는 거부하도록 설정
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/", "/auth/**").permitAll()
-                                .requestMatchers("/register/customer", "/admin/login").permitAll()
-                                .requestMatchers("/swagger-ui/**").permitAll()
-                                .requestMatchers("/posts/**", "/api/v1/posts/**").hasRole(RoleType.NEW_CUSTOMER.name())
-                                .requestMatchers("/admin/**", "/api/v1/admin/**").hasRole(RoleType.MASTER.name())
+
+                                // swagger
+                                .requestMatchers("/swagger-ui/**", "/swagger-resources/**").permitAll()
+
+                                // 인증, 인가
+                                .requestMatchers("/api/v1/auth/**").permitAll()
+
+                                // 내 정보
+                                .requestMatchers("/api/v1/my/customer/**").hasAnyRole(RoleType.NEW_CUSTOMER.name(),
+                                                                                                        RoleType.COMMON_CUSTOMER.name(),
+                                                                                                        RoleType.VIP_CUSTOMER.name(),
+                                                                                                        RoleType.VVIP_CUSTOMER.name()
+                                )
+
+                                // 회원 가입
+//                                .requestMatchers("/api/vi/user/**").permitAll()
+//
+//                                .requestMatchers("/", "/auth/**").permitAll()
+//                                .requestMatchers("/register/customer", "/admin/login").permitAll()
+//                                .requestMatchers("/posts/**", "/api/v1/posts/**").hasRole(RoleType.NEW_CUSTOMER.name())
+//                                .requestMatchers("/admin/**", "/api/v1/admin/**").hasRole(RoleType.MASTER.name())
+
+                                // Master는 모든 api 접근 가능
+//                                .requestMatchers("/**").hasRole(RoleType.MASTER.name())
+
                                 .anyRequest().permitAll() // 기본적인 api가 갖춰지면 .hasAnyRole()로 수정 필요
                 )
 
