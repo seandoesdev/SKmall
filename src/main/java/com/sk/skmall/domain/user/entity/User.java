@@ -2,15 +2,14 @@ package com.sk.skmall.domain.user.entity;
 
 import com.sk.skmall.domain.base.RoleType;
 import com.sk.skmall.domain.user.dto.UserDTO;
+import com.sk.skmall.domain.user.dto.request.UserSignupRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.cglib.core.Local;
-import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "USER_TB")
@@ -46,7 +45,7 @@ public class User {
     private String gender;
 
     @CreationTimestamp
-    private LocalDateTime birth;
+    private LocalDate birth;
 
     @Column(length = 16)
     private String phone;
@@ -84,6 +83,20 @@ public class User {
                 .phone(userDTO.getPhone())
                 .terms_agree(userDTO.getTerms_agree())
                 .marketing_agree(userDTO.getMarketing_agree())
+                .build();
+    }
+
+    public static User from(UserSignupRequest request){
+        return User.builder()
+                .id(request.getId())
+                .email(request.getEmail())
+                .username(request.getUsername())
+                .password(request.getPassword())
+                .gender(request.getGender())
+                .birth(request.getBirth())
+                .phone(request.getPhone())
+                .terms_agree(request.getTerms_agree())
+                .marketing_agree(request.getMarketing_agree())
                 .build();
     }
 }
