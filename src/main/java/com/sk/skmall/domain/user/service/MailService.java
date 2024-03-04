@@ -1,11 +1,10 @@
 package com.sk.skmall.domain.user.service;
 
-import com.sk.skmall.domain.user.dto.MailDTO;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +14,9 @@ import org.springframework.stereotype.Service;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    private static final String sendEmail = "seandoesdev@gmail.com";
     private static int verificationNumber;
+    @Value("${spring.mail.username}")
+    private String sendEmail;
 
     public static void createVerificationNumber(){
         verificationNumber = (int)(Math.random() * (90000)) + 100000;// (int) Math.random() * (최댓값-최소값+1) + 최소값
@@ -27,7 +27,7 @@ public class MailService {
      * @param mail 인증번호 받을 이메일
      * @return
      */
-    public MimeMessage CreateMail(String mail){
+    public MimeMessage createMail(String mail){
         createVerificationNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
 
@@ -53,7 +53,7 @@ public class MailService {
      * @return
      */
     public int sendMail(String mail){
-        MimeMessage message = CreateMail(mail);
+        MimeMessage message = createMail(mail);
         javaMailSender.send(message);
 
         return verificationNumber;
