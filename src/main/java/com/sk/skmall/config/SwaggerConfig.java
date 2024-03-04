@@ -13,13 +13,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
+    private String env = System.getProperty("spring.profiles.active");
+
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(new Info()
                         .title("커머스 프로젝트 API")
                         .description("쇼핑몰 사이트를 구성하는 데 필요한 api를 확인할 수 있습니다.")
-                        .version("1.0.0"));
+                        .version(env));
     }
 
     @Bean
@@ -48,7 +50,7 @@ public class SwaggerConfig {
         String title = "SKmall Swagger UI";
         String description = "You can check API";
 
-        Info info = new Info().title(title).description(description).version("1.0.0");
+        Info info = new Info().title(title).description(description).version(env);
 
         return new OpenAPI().info(info);
     }
