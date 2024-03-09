@@ -1,5 +1,6 @@
 package com.sk.skmall.web.auth;
 
+import com.sk.skmall.domain.base.ValidationSequence;
 import com.sk.skmall.domain.user.dto.UserDTO;
 import com.sk.skmall.domain.user.service.UserService;
 import com.sk.skmall.domain.user.dto.request.UserSignupRequest;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import static com.sk.skmall.util.HttpResponses.RESPONSE_OK;
@@ -21,20 +23,21 @@ public class JoinController {
 
     @Operation(summary = "관리자 회원가입")
     @PostMapping("/admin/api/v1/user/admin")
-    public ResponseEntity<HttpStatus> signup(@RequestBody UserSignupRequest request){
+    public ResponseEntity<HttpStatus> signup(@RequestBody @Validated(ValidationSequence.class)
+                                                 UserSignupRequest request){
         return RESPONSE_OK;
     }
 
     @Operation(summary = "고객 회원가입")
     @PostMapping("/api/v1/user/customer")
-    public UserDTO registerCustomer(@RequestBody UserSignupRequest request){
-        System.out.println(request);
+    public UserDTO registerCustomer(@RequestBody @Validated(ValidationSequence.class)
+                                        UserSignupRequest request){
         return userServiceImpl.joinProcessOfCustomer(request);
     }
 
     @Operation(summary = "판매원 회원가입")
     @PostMapping("/api/v1/user/seller")
-    public ResponseEntity<HttpStatus> registerSeller(@RequestBody UserSignupRequest request){
+    public ResponseEntity<HttpStatus> registerSeller(@RequestBody @Validated(ValidationSequence.class) UserSignupRequest request){
         userServiceImpl.joinProcessOfSeller(request);
         return RESPONSE_OK;
     }

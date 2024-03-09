@@ -1,5 +1,6 @@
 package com.sk.skmall.web.auth;
 
+import com.sk.skmall.domain.base.ValidationSequence;
 import com.sk.skmall.domain.user.dto.UserDTO;
 import com.sk.skmall.domain.user.dto.response.SigninResponse;
 import com.sk.skmall.domain.user.service.MailService;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "인증/인가")
@@ -22,7 +24,7 @@ public class AuthController {
     @Operation(summary = "회원 로그인")
     @PostMapping("/api/v1/auth/signin")
     @ResponseBody
-    private SigninResponse signin(@RequestBody UserSigninRequset request,
+    private SigninResponse signin(@RequestBody @Validated(ValidationSequence.class) UserSigninRequset request,
                                                 HttpSession httpSession){
 
         SigninResponse response = userServiceImpl.loginProcess(request);
@@ -32,7 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/api/v1/auth/password/change")
-    public void resetPassword(@RequestBody UserDTO userDTO){
+    public void resetPassword(@RequestBody @Validated(ValidationSequence.class) UserDTO userDTO){
         userServiceImpl.updateUserInfo(userDTO.getPassword(), userDTO.getEmail());
     }
 
